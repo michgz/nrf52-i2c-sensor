@@ -68,6 +68,7 @@
 #include "app_util_platform.h"
 #include "bsp_btn_ble.h"
 #include "nrf_pwr_mgmt.h"
+#include "nrf_ringbuf.h"
 
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -77,14 +78,15 @@
 
 #define APP_BLE_CONN_CFG_TAG            1                                           /**< A tag identifying the SoftDevice BLE configuration. */
 
-#define DEVICE_NAME                     "Nordic_UART"                               /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "LPLOG"                                     /**< Name of device. Will be included in the advertising data. */
 #define NUS_SERVICE_UUID_TYPE           BLE_UUID_TYPE_VENDOR_BEGIN                  /**< UUID type for the Nordic UART Service (vendor specific). */
 
 #define APP_BLE_OBSERVER_PRIO           3                                           /**< Application's BLE observer priority. You shouldn't need to modify this value. */
 
-#define APP_ADV_INTERVAL                64                                          /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL_FAST           64                                          /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
+#define APP_ADV_INTERVAL_SLOW           1600                                        /**< The advertising interval (in units of 0.625 ms. This value corresponds to 40 ms). */
 
-#define APP_ADV_DURATION                18000                                       /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
+#define APP_ADV_DURATION                600                                         /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 
 #define MIN_CONN_INTERVAL               MSEC_TO_UNITS(20, UNIT_1_25_MS)             /**< Minimum acceptable connection interval (20 ms), Connection interval uses 1.25 ms units. */
 #define MAX_CONN_INTERVAL               MSEC_TO_UNITS(75, UNIT_1_25_MS)             /**< Maximum acceptable connection interval (75 ms), Connection interval uses 1.25 ms units. */
@@ -129,11 +131,83 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
 
+// Buffer
+NRF_RINGBUF_DEF(databuf, 256);
+
+// Read sensor timer
+APP_TIMER_DEF(read_timer);
+
+typedef struct __attribute__((packed))
+{
+    uint32_t timestamp;
+    uint32_t temperature_humidity;
+} DATA_PKT;
+
+static void read_timer_handler(void * p_context)
+{
+    static uint32_t x;
+    static uint32_t ts;
+    
+
+    x = sensor_read();
+    ts = app_timer_cnt_get() / (APP_TIMER_CLOCK_FREQ/2);  // Time in seconds. The factor of 2 is possibly
+                                                          // related to APP_TIMER_CONFIG_RTC_FREQUENCY as
+                                                          // defined in sdk_config.h
+    
+    
+    
+    uint8_t * the_data = NULL;
+    size_t the_length = 8;
+    
+    ret_code_t err_code = nrf_ringbuf_alloc(&databuf, &the_data, &the_length, true);
+    APP_ERROR_CHECK(err_code);
+    
+    if (!!the_data && the_length >= 8)
+    {
+        ((DATA_PKT *)the_data)->timestamp = ts;
+        ((DATA_PKT *)the_data)->temperature_humidity = x;
+        
+        err_code = nrf_ringbuf_put(&databuf, 8);
+        APP_ERROR_CHECK(err_code);
+    }
+}
+
+static void send_data(size_t max_len)
+{
+    ret_code_t err_code;
+    
+    uint8_t * the_data = NULL;
+    size_t the_length = max_len;
+    
+    if (m_conn_handle != BLE_CONN_HANDLE_INVALID)
+    {
+        err_code = nrf_ringbuf_get(&databuf, &the_data, &the_length, false);
+        APP_ERROR_CHECK(err_code);
+        
+        if (!!the_data && the_length > 0)
+        {
+            uint16_t len = (uint16_t) the_length;
+            err_code = ble_nus_data_send(&m_nus, the_data, &len, m_conn_handle);
+            if (err_code != NRF_ERROR_INVALID_STATE)
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+        }
+    }
+
+}
+
+
+
+
 /**@brief Function for initializing the timer module.
  */
 static void timers_init(void)
 {
     ret_code_t err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
+
+    err_code = app_timer_create(&read_timer, APP_TIMER_MODE_REPEATED, &read_timer_handler);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -216,7 +290,21 @@ static void nus_data_handler(ble_nus_evt_t * p_evt)
             //while (app_uart_put('\n') == NRF_ERROR_BUSY);
         }
     }
-
+    else if (p_evt->type == BLE_NUS_EVT_TX_RDY)
+    {
+        NRF_LOG_INFO("BLE_NUS_EVT_TX_RDY");
+        send_data(232);
+    }
+    else if (p_evt->type == BLE_NUS_EVT_COMM_STARTED)
+    {
+        NRF_LOG_INFO("BLE_NUS_EVT_COMM_STARTED");
+        send_data(232);
+    }
+    else if (p_evt->type == BLE_NUS_EVT_COMM_STOPPED)
+    {
+        NRF_LOG_INFO("BLE_NUS_EVT_COMM_STOPPED");
+    }
+    
 }
 /**@snippet [Handling the data received over BLE] */
 
@@ -580,8 +668,11 @@ static void advertising_init(void)
     init.srdata.uuids_complete.p_uuids  = m_adv_uuids;
 
     init.config.ble_adv_fast_enabled  = true;
-    init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
+    init.config.ble_adv_fast_interval = APP_ADV_INTERVAL_FAST;
     init.config.ble_adv_fast_timeout  = APP_ADV_DURATION;
+    init.config.ble_adv_slow_enabled  = true;
+    init.config.ble_adv_slow_interval = APP_ADV_INTERVAL_SLOW;
+    init.config.ble_adv_slow_timeout  = 0;  // indefinite
     init.evt_handler = on_adv_evt;
 
     err_code = ble_advertising_init(&m_advertising, &init);
@@ -646,12 +737,17 @@ static void advertising_start(void)
     APP_ERROR_CHECK(err_code);
 }
 
+static void buffer_init(void)
+{
+    nrf_ringbuf_init(&databuf);
+}
 
 /**@brief Application main function.
  */
 int main(void)
 {
     bool erase_bonds;
+    ret_code_t err_code;
 
     // Initialize.
     log_init();
@@ -670,8 +766,14 @@ int main(void)
     NRF_LOG_INFO("Debug logging for UART over RTT started.");
     advertising_start();
 
+    buffer_init();
+
     // Do the dedicated enable of the sensor hardware
     sensor_init();
+
+    // Start the periodic timer
+    err_code = app_timer_start(read_timer, APP_TIMER_TICKS(60000), (void *) 1);
+    APP_ERROR_CHECK(err_code);
 
     // Enter main loop.
     for (;;)
