@@ -26,7 +26,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/fifo/app_fifo.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer2.c \
-  $(SDK_ROOT)/components/libraries/uart/app_uart_fifo.c \
   $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/components/libraries/timer/drv_rtc.c \
   $(SDK_ROOT)/components/libraries/hardfault/hardfault_implementation.c \
@@ -43,17 +42,15 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
   $(SDK_ROOT)/components/libraries/sortlist/nrf_sortlist.c \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
-  $(SDK_ROOT)/components/libraries/uart/retarget.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(SDK_ROOT)/components/boards/boards.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_twi.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twi.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp.c \
   $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
   $(PROJ_DIR)/main.c \

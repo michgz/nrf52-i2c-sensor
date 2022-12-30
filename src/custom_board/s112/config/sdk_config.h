@@ -53,7 +53,7 @@
  
 
 #ifndef BSP_BTN_BLE_ENABLED
-#define BSP_BTN_BLE_ENABLED 1
+#define BSP_BTN_BLE_ENABLED 0
 #endif
 
 // </h> 
@@ -1804,7 +1804,7 @@
 // <196609=> External Full Swing 
 
 #ifndef NRFX_CLOCK_CONFIG_LF_SRC
-#define NRFX_CLOCK_CONFIG_LF_SRC 1
+#define NRFX_CLOCK_CONFIG_LF_SRC 0
 #endif
 
 // <o> NRFX_CLOCK_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -4283,13 +4283,13 @@
 // <e> NRFX_TWI_ENABLED - nrfx_twi - TWI peripheral driver
 //==========================================================
 #ifndef NRFX_TWI_ENABLED
-#define NRFX_TWI_ENABLED 0
+#define NRFX_TWI_ENABLED 1
 #endif
 // <q> NRFX_TWI0_ENABLED  - Enable TWI0 instance
  
 
 #ifndef NRFX_TWI0_ENABLED
-#define NRFX_TWI0_ENABLED 0
+#define NRFX_TWI0_ENABLED 1
 #endif
 
 // <q> NRFX_TWI1_ENABLED  - Enable TWI1 instance
@@ -4387,7 +4387,7 @@
 // <e> NRFX_UARTE_ENABLED - nrfx_uarte - UARTE peripheral driver
 //==========================================================
 #ifndef NRFX_UARTE_ENABLED
-#define NRFX_UARTE_ENABLED 1
+#define NRFX_UARTE_ENABLED 0
 #endif
 // <o> NRFX_UARTE0_ENABLED - Enable UARTE0 instance 
 #ifndef NRFX_UARTE0_ENABLED
@@ -4508,7 +4508,7 @@
 // <e> NRFX_UART_ENABLED - nrfx_uart - UART peripheral driver
 //==========================================================
 #ifndef NRFX_UART_ENABLED
-#define NRFX_UART_ENABLED 1
+#define NRFX_UART_ENABLED 0
 #endif
 // <o> NRFX_UART0_ENABLED - Enable UART0 instance 
 #ifndef NRFX_UART0_ENABLED
@@ -5779,7 +5779,7 @@
 // <e> TWI_ENABLED - nrf_drv_twi - TWI/TWIM peripheral driver - legacy layer
 //==========================================================
 #ifndef TWI_ENABLED
-#define TWI_ENABLED 0
+#define TWI_ENABLED 1
 #endif
 // <o> TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency
  
@@ -5825,7 +5825,7 @@
 // <e> TWI0_ENABLED - Enable TWI0 instance
 //==========================================================
 #ifndef TWI0_ENABLED
-#define TWI0_ENABLED 0
+#define TWI0_ENABLED 1
 #endif
 // <q> TWI0_USE_EASY_DMA  - Use EasyDMA (if present)
  
@@ -5868,7 +5868,7 @@
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver - legacy layer
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+#define UART_ENABLED 0
 #endif
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
  
@@ -6273,7 +6273,7 @@
 // <e> APP_UART_ENABLED - app_uart - UART driver
 //==========================================================
 #ifndef APP_UART_ENABLED
-#define APP_UART_ENABLED 1
+#define APP_UART_ENABLED 0
 #endif
 // <o> APP_UART_DRIVER_INSTANCE  - UART instance used
  
@@ -7456,7 +7456,7 @@
  
 
 #ifndef BUTTON_ENABLED
-#define BUTTON_ENABLED 1
+#define BUTTON_ENABLED 0
 #endif
 
 // <q> BUTTON_HIGH_ACCURACY_ENABLED  - Enables GPIOTE high accuracy for buttons

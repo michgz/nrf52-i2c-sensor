@@ -207,17 +207,18 @@ static void nus_data_handler(ble_nus_evt_t * p_evt)
         {
             do
             {
-                err_code = app_uart_put(p_evt->params.rx_data.p_data[i]);
-                if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_BUSY))
-                {
-                    NRF_LOG_ERROR("Failed receiving NUS message. Error 0x%x. ", err_code);
-                    APP_ERROR_CHECK(err_code);
-                }
+                //err_code = app_uart_put(p_evt->params.rx_data.p_data[i]);
+                //if ((err_code != NRF_SUCCESS) && (err_code != NRF_ERROR_BUSY))
+                //{
+                //    NRF_LOG_ERROR("Failed receiving NUS message. Error 0x%x. ", err_code);
+                //    APP_ERROR_CHECK(err_code);
+                //}
+                err_code = NRF_SUCCESS;
             } while (err_code == NRF_ERROR_BUSY);
         }
         if (p_evt->params.rx_data.p_data[p_evt->params.rx_data.length - 1] == '\r')
         {
-            while (app_uart_put('\n') == NRF_ERROR_BUSY);
+            //while (app_uart_put('\n') == NRF_ERROR_BUSY);
         }
     }
 
@@ -523,7 +524,7 @@ void uart_event_handle(app_uart_evt_t * p_event)
     switch (p_event->evt_type)
     {
         case APP_UART_DATA_READY:
-            UNUSED_VARIABLE(app_uart_get(&data_array[index]));
+            //UNUSED_VARIABLE(app_uart_get(&data_array[index]));
             index++;
 
             if ((data_array[index - 1] == '\n') ||
