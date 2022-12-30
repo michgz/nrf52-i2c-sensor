@@ -78,10 +78,12 @@ def run(ADDR):
         
         if len(TIMES) > 0:
             START_TIME = TS - datetime.timedelta(seconds = max(TIMES)) # Assumes the last time is time of reading. That could be off quite a bit
-            
+        
+        ID = random.randint(0, 9999999)
+        
         with open(pathlib.Path(__file__).parent.joinpath("Received_Data_{0}_{1:07d}.txt".format(  \
                     TS.strftime("%y%m%d%H%M%S"), \
-                    random.randint(0, 9999999)   \
+                    ID   \
                 ), "w") as f1:
             f1.write("Timestamp: {0}\n".format(TS.strftime("%d/%m/%Y %H:%M:%S")))
             f1.write("Data:\n")
@@ -96,7 +98,7 @@ def run(ADDR):
 
         with open(pathlib.Path(__file__).parent.joinpath("COLLATED.csv"), "a") as f2:
             for N in range(len(TIMES)):
-                f1.write("{0},".format((START_TIME + datetime.timedelta(seconds = TIMES[N])).strftime("%d/%m/%Y %H:%M:%S")))
+                f1.write("{0:d},{1},".format(ID, (START_TIME + datetime.timedelta(seconds = TIMES[N])).strftime("%d/%m/%Y %H:%M:%S")))
                 f1.write("{0:f},degC,".format( -45. + 175.*(float(TEMPS[N])/65535.)   ))
                 f1.write("{0:f},%RH,\n".format( -6. + 125.*(float(HUMS[N])/65535.)   ))
 
