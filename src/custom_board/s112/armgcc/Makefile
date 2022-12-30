@@ -2,8 +2,12 @@ PROJECT_NAME     := ble_app_uart_pca10040_s112
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../../../..
+SDK_ROOT := ../../../../nRF5_SDK_17.1.0_ddde560
 PROJ_DIR := ../../..
+
+GNU_INSTALL_ROOT = ../../../../arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin/
+GNU_VERSION = 12.2.1
+GNU_PREFIX = arm-none-eabi
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
   LINKER_SCRIPT  := ble_app_uart_gcc_nrf52.ld
