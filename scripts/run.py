@@ -99,9 +99,9 @@ def run(ADDR):
 
         with open(pathlib.Path(__file__).parent.joinpath("COLLATED.csv"), "a") as f2:
             for N in range(len(TIMES)):
-                f1.write("{0:d},{1},".format(ID, (START_TIME + datetime.timedelta(seconds = TIMES[N])).strftime("%d/%m/%Y %H:%M:%S")))
-                f1.write("{0:f},degC,".format( -45. + 175.*(float(TEMPS[N])/65535.)   ))
-                f1.write("{0:f},%RH,\n".format( -6. + 125.*(float(HUMS[N])/65535.)   ))
+                f2.write("{0:d},{1},".format(ID, (START_TIME + datetime.timedelta(seconds = TIMES[N])).strftime("%d/%m/%Y %H:%M:%S")))
+                f2.write("{0:f},degC,".format( -45. + 175.*(float(TEMPS[N])/65535.)   ))
+                f2.write("{0:f},%RH,\n".format( -6. + 125.*(float(HUMS[N])/65535.)   ))
 
 
 
