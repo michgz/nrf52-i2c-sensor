@@ -63,6 +63,22 @@ def run(ADDR):
     asyncio.run(main(ADDR))
     
     if TS is not None:
+      
+        TIMES = []
+        TEMPS = []
+        HUMS = []
+        
+        I = 0
+        while I+8 <= len(RXED):
+            TIMES.append(struct.unpack_from("<I", RXED, I+0)[0])
+            TEMPS.append(struct.unpack_from(">H", RXED, I+4)[0])
+            HUMS.append(struct.unpack_from(">H", RXED, I+6)[0])
+            
+            I += 8
+        
+        if len(TIMES) > 0:
+            START_TIME = TS - datetime.timedelta(seconds = max(TIMES)) # Assumes the last time is time of reading. That could be off quite a bit
+            
         with open(pathlib.Path(__file__).parent.joinpath("Received_Data_{0}_{1:07d}.txt".format(  \
                     TS.strftime("%y%m%d%H%M%S"), \
                     random.randint(0, 9999999)   \
@@ -72,25 +88,17 @@ def run(ADDR):
             f1.write(textwrap.indent(textwrap.fill(RXED.hex(" ").upper(), 48), "    ") + "\n\n")
             f1.write("Decode: (times are approximate)\n")
             
-            TIMES = []
-            TEMPS = []
-            HUMS = []
-            
-            I = 0
-            while I+8 <= len(RXED):
-                TIMES.append(struct.unpack_from("<I", RXED, I+0)[0])
-                TEMPS.append(struct.unpack_from(">H", RXED, I+4)[0])
-                HUMS.append(struct.unpack_from(">H", RXED, I+6)[0])
-                
-                I += 8
-            
-            if len(TIMES) > 0:
-                START_TIME = TS - datetime.timedelta(seconds = max(TIMES)) # Assumes the last time is time of reading. That could be off quite a bit
-                
+
             for N in range(len(TIMES)):
                 f1.write("{0}".format((START_TIME + datetime.timedelta(seconds = TIMES[N])).strftime("%d/%m/%Y %H:%M:%S").ljust(26)))
                 f1.write("{0:0.2f} degC".format( -45. + 175.*(float(TEMPS[N])/65535.)   ).ljust(24))
                 f1.write("{0:0.1f} %RH".format( -6. + 125.*(float(HUMS[N])/65535.)   ).ljust(24) +  "\n")
+
+        with open(pathlib.Path(__file__).parent.joinpath("COLLATED.csv"), "a") as f2:
+            for N in range(len(TIMES)):
+                f1.write("{0},".format((START_TIME + datetime.timedelta(seconds = TIMES[N])).strftime("%d/%m/%Y %H:%M:%S")))
+                f1.write("{0:f},degC,".format( -45. + 175.*(float(TEMPS[N])/65535.)   ))
+                f1.write("{0:f},%RH,\n".format( -6. + 125.*(float(HUMS[N])/65535.)   ))
 
 
 
