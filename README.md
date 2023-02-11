@@ -12,7 +12,7 @@ The "scripts" directory contains example code for the host end, using Python and
 
 ## How to build
 
-'''
+```
 cd src/custom_board/s112/armgcc/Makefile
 make all
-'''
+```
