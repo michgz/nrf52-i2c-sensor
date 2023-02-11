@@ -15,6 +15,5 @@ The "scripts" directory contains example code for the host end, using Python and
 Firstly populate the nRF5_SDK_17.1.0_ddde560 directory with v17.1.0 of the SDK downloaded from Nordic (https://www.nordicsemi.com/Products/Development-software/nrf5-sdk/download). Then do:
 
 ```
-cd src/custom_board/s112/armgcc/Makefile
-make all
+make all -f src/custom_board/s112/armgcc/Makefile
 ```
