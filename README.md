@@ -6,6 +6,6 @@ remote end to
 be battery-powered and so current consumption is highly optimised.
 
 The sensor that's currently implemented is a Sensirion SHT-40 temperature/humidity sensor, but most of the functionality is completely agnostic to the
-sensor that's being used -- just swap out the "sensor.c" file and everything else should work the same.
+sensor that's being used - just swap out the "src/sensor.c" file and everything else should work the same.
 
 The "scripts" directory contains example code for the host end, using Python and the [Bleak](https://pypi.org/project/bleak/) library.
