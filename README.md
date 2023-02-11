@@ -9,3 +9,10 @@ The sensor that's currently implemented is a Sensirion SHT-40 temperature/humidi
 sensor that's being used - just swap out the "src/sensor.c" file and everything else should work the same.
 
 The "scripts" directory contains example code for the host end, using Python and the [Bleak](https://pypi.org/project/bleak/) library.
+
+## How to build
+
+'''
+cd src/custom_board/s112/armgcc/Makefile
+make all
+'''
